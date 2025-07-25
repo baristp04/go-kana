@@ -5,7 +5,9 @@ This app is being developed with React Native for my internship at Teracity Soft
 ## Main Features Currently Being Worked On: 
 
 >Proper user-unique streak management.
+
 >No repeated user nicknames in the database.
+
 >A statistics page for the user to see their profiles.
 
 ## Features To Be Added After The Main Features
@@ -15,8 +17,12 @@ This app is being developed with React Native for my internship at Teracity Soft
 ##Technologies Used
 
 >TypeScript
+
 >Redux Toolkit
+
 >React Navigation
+
 >Firebase
+
 >Async Storage
 
