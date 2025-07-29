@@ -9,7 +9,7 @@ import QuizHome from "./pages/Quiz/QuizHome";
 import QuizPage from "./pages/Quiz/QuizPage";
 import Statistics from "./pages/Statistics";
 import Login from "./pages/Authentication/Login"
-import Registeration from "./pages/Authentication/Registeration"
+import Registeration from "./pages/Authentication/Registration"
 import { getAuth } from "@react-native-firebase/auth";
 import { onAuthStateChanged } from "@react-native-firebase/auth";
 import { useDispatch, useSelector,} from "react-redux";
