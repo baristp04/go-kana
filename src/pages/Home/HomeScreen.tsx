@@ -12,7 +12,6 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 const Home = () => {
 
     const navigation = useNavigation<NavigationProp>();
-
     const title: string = "Welcome To GoKana!"
 
     const handleLogOut = () => {

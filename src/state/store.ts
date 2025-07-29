@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer, { setCounter} from "./user/userSlice";
+import userReducer from "./user/userSlice";
 import { loadFromAsyncStorage } from "./AsyncStorage";
 import authReducer, {setUserName}  from "./auth/authSlice"
 
@@ -19,9 +19,7 @@ export const store = configureStore({
 });
 
 const initializeStore = async () => {
-    const counterValue = await loadFromAsyncStorage("user");
     const userName = await loadFromAsyncStorage("auth")
-    store.dispatch(setCounter(counterValue));
     store.dispatch(setUserName(userName));
 }
 

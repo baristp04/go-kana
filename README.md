@@ -25,4 +25,3 @@ This app is being developed with React Native for my internship at Teracity Soft
 >Firebase
 
 >Async Storage
-

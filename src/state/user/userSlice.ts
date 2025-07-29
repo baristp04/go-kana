@@ -15,21 +15,20 @@ const userSlice = createSlice({
     reducers: {
         increment: (state) => {
             state.streak += 1;
-            saveToAsyncStorage("user",state.streak)
         },
         reset: (state) => {
             state.streak = 0;
-            saveToAsyncStorage("user",state.streak)
         },
-        setCounter: (state, action: PayloadAction<number>) => {
+        setStreak: (state, action: PayloadAction<number>) => {
             state.streak = action.payload;
-            saveToAsyncStorage("user",state.streak)
         },
     },
 })
 
-export const { increment, reset, setCounter } = userSlice.actions;
+export const { increment, reset, setStreak } = userSlice.actions;
 export default userSlice.reducer;
+
+
 
 
 

@@ -1,5 +1,5 @@
-import React, { useState} from "react";
-import { View, Text, TextInput} from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import hiraganaData from "../../data/basic-hiragana.json";
 import katakanaData from "../../data/katakana.json";
@@ -7,11 +7,37 @@ import Button from "../../components/Button/Button";
 import styles from "./Quiz.styles";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../state/store";
-import { increment, reset } from "../../state/user/userSlice";
+import database from '@react-native-firebase/database';
+import auth from "@react-native-firebase/auth";
+import { increment, reset, setStreak } from "../../state/user/userSlice";
 import onDisableBack from "../../hooks/disableBackPress";
 import onHideBottoMTab from "../../hooks/hideBotttomTab";
 
 const QuizPage = () => {
+
+    const userUid = auth().currentUser?.uid;
+
+    const streak = useSelector((state: RootState) => state.user.streak);
+
+    useEffect(() => {
+        const unsubscribe = auth().onAuthStateChanged(async () => {
+            if (userUid) {
+                try {
+                    const snapshot = await database()
+                        .ref(`users/${userUid}/streak`)
+                        .once("value");
+
+                    const savedStreak = snapshot.val() || 0;
+                    dispatch(setStreak(savedStreak));
+                    console.log("Fetched streak:", savedStreak);
+                } catch (error) {
+                    console.log("Error fetching streak:", error);
+                }
+            }
+        });
+
+        return () => unsubscribe(); 
+    }, [userUid]);
 
     const baseTabBarStyle = {
         backgroundColor: '#9a1750',
@@ -25,13 +51,12 @@ const QuizPage = () => {
     const data = dataType === "hiragana" ? hiraganaData : katakanaData;
     const randomIndex = Math.floor(Math.random() * data.length);
 
+
     const [count, setCount] = useState(0);
     const [input, setInput] = useState("");
     const [currentIndex, setCurrentIndex] = useState(randomIndex);
     const [error, setError] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-
-    const streak = useSelector((state: RootState) => state.user.streak);
     const dispatch = useDispatch()
 
     const setRandomLetter = () => {
@@ -42,22 +67,38 @@ const QuizPage = () => {
 
     const [previousElement, setPreviousElement] = useState(data[currentIndex]);
 
-    const handleSubmit = (input: string) => {
-
-        setSubmitted(true);
+    const onSubmit = async (input: string) => {
         if (input.toLowerCase() === data[currentIndex].romaji) {
-            dispatch(increment());
-            setCount(count + 1);
-            setError(false)
+            try {
+                setSubmitted(true);
 
-        } else {
-            dispatch(reset());
-            setError(true);
-
+                dispatch(increment())
+                const newStreak = streak + 1
+                await database().ref(`users/${userUid}`).update({
+                    streak: newStreak,
+                });
+                setCount(count + 1);
+                setError(false)
+            } catch (e) {
+                console.log("Couldn't find user:", e)
+            }
+        }
+        else {
+            try {
+                setSubmitted(true);
+                dispatch(reset())
+                await database().ref(`users/${userUid}`).update({
+                    streak: 0,
+                });
+                setError(true)
+            } catch (e) {
+                console.log("Couldn't find user:", e)
+            }
         }
         setPreviousElement(data[currentIndex]);
         setInput("");
         setRandomLetter();
+
     }
 
     return (
@@ -77,7 +118,7 @@ const QuizPage = () => {
                     style={styles.inputContainer} />
             </View>
             <View style={styles.buttonContainer}>
-                <Button label="Submit" press={() => handleSubmit(input)} />
+                <Button label="Submit" press={() => onSubmit(input)} />
             </View>
             {submitted && (
                 error
@@ -86,9 +127,18 @@ const QuizPage = () => {
             )}
             <Text style={styles.streakText}> Correct Answer Streak: {streak}</Text>
             <View style={styles.resetContainer}>
-                <Button label = "End Streak" press = {() => dispatch(reset())}/>
+                <Button label="End Streak" press={async () => {
+                    try {
+                        dispatch(reset())
+                        await database().ref(`users/${userUid}`).update({
+                            streak: 0,
+                        });
+                    } catch (e) {
+                        console.log("Couldn't reset streak:", e)
+                    }
+                }} />
             </View>
-            
+
         </View>
     )
 }

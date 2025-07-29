@@ -5,7 +5,8 @@ import { getAuth, createUserWithEmailAndPassword, signOut } from "@react-native-
 import database from '@react-native-firebase/database';
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../state/store";
 import { loadFromAsyncStorage } from "../../state/AsyncStorage";
 import { setUserName } from "../../state/auth/authSlice";
 import { setIsRegistering } from "../../state/auth/authSlice";
@@ -55,7 +56,7 @@ const Register = () => {
 
             await database().ref(`users/${user.uid}`).set({
                 userName: nickName, 
-                streak: 0,
+                streak: 0
             });
 
             await signOut(getAuth())
