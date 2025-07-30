@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigationState } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "./pages/Home/HomeScreen";
@@ -65,7 +65,7 @@ function HomeStack() {
         backgroundColor: "#9a1750"
       },
       headerRight: () => (
-        <TouchableOpacity onPress={() => auth().signOut()}>
+        <TouchableOpacity disabled={false} onPress={() => auth().signOut()}>
           <Ionicons name="log-out-outline" size={32} color={"#e3e2df"} />
         </TouchableOpacity>
       )
@@ -83,7 +83,6 @@ function HomeStack() {
 }
 
 function QuizStack() {
-
   const userUid = auth().currentUser?.uid
   const userName = useSelector((state: RootState) => state.auth.userName);
   const dispatch = useDispatch();
@@ -103,28 +102,42 @@ function QuizStack() {
     return () => unsubscribe()
   }, [userUid])
 
+  const commonHeaderOptions = {
+    title: userName,
+    headerTitleStyle: {
+      color: "#e3e2df"
+    },
+    headerTintColor: "#e3e2df",
+    headerStyle: {
+      backgroundColor: "#9a1750"
+    },
+  };
+
   return (
-    <Stack.Navigator screenOptions={{
-      title: userName,
-      headerTitleStyle: {
-        color: "#e3e2df"
-      },
-      headerStyle: {
-        backgroundColor: "#9a1750"
-      },
-      headerRight: () => (
-        <TouchableOpacity onPress={() => auth().signOut()}>
-          <Ionicons name="log-out-outline" size={32} color={"#e3e2df"} />
-        </TouchableOpacity>
-      )
-    }}>
+    <Stack.Navigator>
       <Stack.Screen
         name="QuizHome"
         component={QuizHome}
+        options={{
+          ...commonHeaderOptions,
+          headerRight: () => (
+            <TouchableOpacity onPress={() => auth().signOut()}>
+              <Ionicons name="log-out-outline" size={32} color="#e3e2df" />
+            </TouchableOpacity>
+          )
+        }}
       />
       <Stack.Screen
         name="QuizScreen"
         component={QuizPage}
+        options={{
+          ...commonHeaderOptions,
+          headerRight: () => (
+            <TouchableOpacity disabled={true} onPress={() => auth().signOut()}>
+              <Ionicons name="log-out-outline" size={32} color="#666" />
+            </TouchableOpacity>
+          )
+        }}
       />
     </Stack.Navigator>
   );
@@ -144,7 +157,7 @@ const Main = () => {
             iconName = focused ? "home" : "home-outline";
           } else if (route.name === "Quiz") {
             iconName = focused ? "book" : "book-outline";
-          } 
+          }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: "#fff",
