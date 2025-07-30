@@ -7,7 +7,6 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import Dictionary from "./pages/Home/DictionaryScreen";
 import QuizHome from "./pages/Quiz/QuizHome";
 import QuizPage from "./pages/Quiz/QuizPage";
-import Statistics from "./pages/Statistics";
 import Login from "./pages/Authentication/Login"
 import Registeration from "./pages/Authentication/Registration"
 import { getAuth } from "@react-native-firebase/auth";
@@ -144,10 +143,7 @@ const Main = () => {
             iconName = focused ? "home" : "home-outline";
           } else if (route.name === "Quiz") {
             iconName = focused ? "book" : "book-outline";
-          } else if (route.name === "User Statistics") {
-            iconName = focused ? "person" : "person-outline";
-          }
-
+          } 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: "#fff",
@@ -157,7 +153,6 @@ const Main = () => {
     >
       <Tab.Screen name="Home" component={HomeStack} />
       <Tab.Screen name="Quiz" component={QuizStack} />
-      <Tab.Screen name="User Statistics" component={Statistics} />
     </Tab.Navigator>
   );
 }
