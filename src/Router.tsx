@@ -83,8 +83,41 @@ function HomeStack() {
 }
 
 function QuizStack() {
+
+  const userUid = auth().currentUser?.uid
+  const userName = useSelector((state: RootState) => state.auth.userName);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const unsubscribe = auth().onAuthStateChanged(async () => {
+      if (userUid) {
+        try {
+          const snapshot = await database().ref(`users/${userUid}/userName`).once("value")
+          const savedUserName = snapshot.val() || "";
+          dispatch(setUserName(savedUserName))
+        } catch (error) {
+          console.log("Couldn't fetch userName:", error)
+        }
+      }
+    })
+    return () => unsubscribe()
+  }, [userUid])
+
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{
+      title: userName,
+      headerTitleStyle: {
+        color: "#e3e2df"
+      },
+      headerStyle: {
+        backgroundColor: "#9a1750"
+      },
+      headerRight: () => (
+        <TouchableOpacity onPress={() => auth().signOut()}>
+          <Ionicons name="log-out-outline" size={32} color={"#e3e2df"} />
+        </TouchableOpacity>
+      )
+    }}>
       <Stack.Screen
         name="QuizHome"
         component={QuizHome}

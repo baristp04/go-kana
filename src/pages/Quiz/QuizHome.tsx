@@ -2,7 +2,6 @@ import React from "react";
 import { View, Text } from "react-native";
 import Button from "../../components/Button/Button";
 import styles from "./Quiz.styles";
-import wanakana from "wanakana";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
@@ -19,10 +18,12 @@ const QuizHome = () => {
                 <Button
                     press={() => { navigation.navigate("QuizScreen", { dataType: "hiragana" }) }}
                     label="Hiragana Quiz"
+                    japanese = "ひらがな くいず"
                 />
                 <Button
                     press={() => { navigation.navigate("QuizScreen", { dataType: "katakana" }) }}
                     label="Katakana Quiz"
+                    japanese="カタカナ クイズ"
                 />
             </View>
 

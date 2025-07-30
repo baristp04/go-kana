@@ -20,10 +20,12 @@ const Home = () => {
                 <Button
                     press={() => navigation.navigate("DictionaryScreen",{ dataType: "hiragana" })}
                     label="Learn Hiragana"
+                    japanese = "ひらがな を まなぶ"
                      />
                 <Button
                     press={() => navigation.navigate("DictionaryScreen",{ dataType: "katakana" })}
                     label="Learn Katakana"
+                    japanese = "カタナ ヲ マナブ"
                      />
             </View>
         </View>
