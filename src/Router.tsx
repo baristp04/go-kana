@@ -60,6 +60,7 @@ function HomeStack() {
       headerTitleStyle: {
         color: "#e3e2df"
       },
+      headerTintColor: "#e3e2df",
       headerStyle: {
         backgroundColor: "#9a1750"
       },

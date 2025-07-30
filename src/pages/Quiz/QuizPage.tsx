@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput } from "react-native";
 import { useRoute } from "@react-navigation/native";
-import hiraganaData from "../../data/basic-hiragana.json";
-import katakanaData from "../../data/katakana.json";
+import basicHiragana from "../../data/basic-hiragana.json";
+import basicKatakana from "../../data/basic-katakana.json";
+import fullHiragana from "../../data/hiragana.json"
+import fullKatakana from "../../data/katakana.json"
 import Button from "../../components/Button/Button";
 import styles from "./Quiz.styles";
 import { useSelector, useDispatch } from "react-redux";
@@ -47,9 +49,14 @@ const QuizPage = () => {
     onHideBottoMTab(baseTabBarStyle);
 
     const route = useRoute();
-    const { dataType } = route.params as { dataType: "hiragana" | "katakana" };
-    const data = dataType === "hiragana" ? hiraganaData : katakanaData;
-    const randomIndex = Math.floor(Math.random() * data.length);
+    const { dataType, isCombinationAllowed } = route.params as {
+        dataType: "hiragana" | "katakana"
+        isCombinationAllowed: boolean;
+    };
+    const letterData = dataType === "hiragana" ? 
+    (isCombinationAllowed ? fullHiragana : basicHiragana) : 
+    (isCombinationAllowed ? fullKatakana : basicKatakana);
+    const randomIndex = Math.floor(Math.random() * letterData.length);
 
 
     const [count, setCount] = useState(0);
@@ -61,14 +68,14 @@ const QuizPage = () => {
 
     const setRandomLetter = () => {
 
-        const newIndex = Math.floor(Math.random() * data.length);
+        const newIndex = Math.floor(Math.random() * letterData.length);
         setCurrentIndex(newIndex);
     }
 
-    const [previousElement, setPreviousElement] = useState(data[currentIndex]);
+    const [previousElement, setPreviousElement] = useState(letterData[currentIndex]);
 
     const onSubmit = async (input: string) => {
-        if (input.toLowerCase() === data[currentIndex].romaji) {
+        if (input.toLowerCase() === letterData[currentIndex].romaji) {
             try {
                 setSubmitted(true);
 
@@ -95,7 +102,7 @@ const QuizPage = () => {
                 console.log("Couldn't find user:", e)
             }
         }
-        setPreviousElement(data[currentIndex]);
+        setPreviousElement(letterData[currentIndex]);
         setInput("");
         setRandomLetter();
 
@@ -107,7 +114,7 @@ const QuizPage = () => {
             <View style={styles.innerContainer}>
                 <Text style={styles.counter}> Correct Answers: {count}</Text>
                 <View style={styles.japaneseLetterContainer}>
-                    <Text style={styles.japanese}>{data[currentIndex].japanese}</Text>
+                    <Text style={styles.japanese}>{letterData[currentIndex].japanese}</Text>
                 </View>
             </View>
             <View>
