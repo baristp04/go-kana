@@ -88,7 +88,7 @@ const AuthHome = () => {
             <View style = {{justifyContent:"center",flexDirection: "row"}}>
                 <Text style={styles.createText}>If you don't have an account, </Text>
                 <TouchableOpacity onPress={() => navigation.navigate("RegisterationScreen")}>
-                    <Text style={[styles.createText,{fontWeight:"medium"}]}>create one!</Text>
+                    <Text style={[styles.createText,{fontWeight:"medium",color:"#9a1750"}]}>create one!</Text>
                 </TouchableOpacity>
             </View>
 
