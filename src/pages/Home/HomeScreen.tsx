@@ -12,17 +12,10 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 const Home = () => {
 
     const navigation = useNavigation<NavigationProp>();
-    const title: string = "Welcome To GoKana!"
-
-    const handleLogOut = () => {
-        signOut(getAuth()).then(() => {
-            return console.log("user signed out");
-        })
-    }
 
     return (
         <View style={styles.homeContainer}>
-            <Text style={styles.title}> {title} </Text>
+            <Text style={styles.title}> Which Kana Would You Like To Learn? </Text>
             <View style={styles.buttonWrapper}>
                 <Button
                     press={() => navigation.navigate("DictionaryScreen",{ dataType: "hiragana" })}
@@ -32,9 +25,6 @@ const Home = () => {
                     press={() => navigation.navigate("DictionaryScreen",{ dataType: "katakana" })}
                     label="Learn Katakana"
                      />
-                <Button
-                    press={handleLogOut}
-                    label="Log Out"/>
             </View>
         </View>
     );

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, Alert } from "react-native"
+import React, { useEffect, useState } from "react";
+import { View, Text, Alert } from "react-native"
+import { TextInput } from "react-native-paper";
 import Button from "../../components/Button/Button";
 import { getAuth, createUserWithEmailAndPassword, signOut } from "@react-native-firebase/auth";
 import database from '@react-native-firebase/database';
@@ -16,6 +17,28 @@ import styles from "./styles"
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const Register = () => {
+    const [userNames, setUserNames] = useState<string[]>([]);
+
+    useEffect(() => {
+        const fetchUserNames = async () => {
+            try {
+                const snapshot = await database().ref("users").once("value");
+                const users = snapshot.val() || {}
+                const names: string[] = []
+                Object.keys(users).forEach(userId => {
+                    if (users[userId] && users[userId].userName) {
+                        names.push(users[userId].userName)
+                    }
+                }
+                )
+                setUserNames(names)
+            } catch (error) {
+                console.log("Couldn't fetch user names:", error)
+            }
+        }
+        fetchUserNames();
+    }, [])
+
     const navigation = useNavigation<NavigationProp>();
     const dispatch = useDispatch();
 
@@ -32,7 +55,8 @@ const Register = () => {
             mockPassword.trim() !== "" &&
             password === mockPassword &&
             password.length >= 6 &&
-            email.includes("@")
+            email.includes("@") &&
+            !userNames.includes(nickName.trim())
         );
     };
 
@@ -55,7 +79,7 @@ const Register = () => {
             const user = userCredential.user;
 
             await database().ref(`users/${user.uid}`).set({
-                userName: nickName, 
+                userName: nickName,
                 streak: 0
             });
 
@@ -77,16 +101,6 @@ const Register = () => {
         }
     }
 
-
-
-    const getPasswordMatchText = () => {
-        if (mockPassword === "" || password === "") return null;
-
-        return mockPassword === password
-            ? <Text style={styles.passwordMatchSuccess}>Passwords Match!</Text>
-            : <Text style={styles.passwordMatchFail}>Passwords Do Not Match!</Text>;
-    };
-
     return (
         <View style={styles.container}>
             <Text style={styles.registerText}>Create Your Account</Text>
@@ -97,28 +111,50 @@ const Register = () => {
                     onChangeText={(text) => setEmail(text)}
                     autoCapitalize="none"
                     keyboardType="email-address"
-                    style={styles.inputContainer} />
+                    style={styles.inputContainer}
+                    mode="outlined"
+                    outlineColor="#e3e2df"
+                    activeOutlineColor="black" />
                 <TextInput
                     placeholder="Set UserName"
                     value={nickName}
                     onChangeText={handleNickName}
                     autoCapitalize="none"
-                    style={styles.inputContainer} />
+                    style={styles.inputContainer}
+                    mode="outlined"
+                    outlineColor="#e3e2df"
+                    activeOutlineColor="black"
+                    right={nickName != "" ? (
+                        <TextInput.Affix
+                            textStyle={styles.match}
+                            text={userNames.includes(nickName.trim()) ? "User Name Is Already Taken" : "User Name Is Acceptable"} />
+                    ) : null} />
+
                 <TextInput
                     placeholder="Set Password"
                     value={password}
                     onChangeText={(text) => setPassword(text)}
                     secureTextEntry
-                    style={styles.inputContainer} />
+                    style={styles.inputContainer}
+                    mode="outlined"
+                    outlineColor="#e3e2df"
+                    activeOutlineColor="black" />
                 <TextInput
                     placeholder="Verify Password"
                     value={mockPassword}
                     onChangeText={(text) => { setMockPassword(text) }
                     }
                     secureTextEntry
-                    style={styles.inputContainer} />
+                    style={styles.inputContainer}
+                    mode="outlined"
+                    outlineColor="#e3e2df"
+                    activeOutlineColor="black"
+                    right={(mockPassword != "") ? (
+                        <TextInput.Affix
+                            textStyle={styles.match}
+                            text={mockPassword === password ? "Password Matches" : "Password Doesn't Match"} />
+                    ) : null} />
             </View>
-            {getPasswordMatchText()}
             <View style={styles.buttonContainer}>
                 <Button label="Sign In" press={handleSignIn} disabled={!isFormValid() || isLoading} />
             </View>

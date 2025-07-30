@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, Text, TextInput,Alert } from "react-native"
+import { View, Text, Alert, TouchableOpacity } from "react-native"
+import { TextInput } from "react-native-paper";
 import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -63,23 +64,32 @@ const AuthHome = () => {
                     onChangeText={(text) => setUserEmail(text)}
                     autoCapitalize="none"
                     keyboardType="email-address"
-                    style={styles.inputContainer} />
+                    style={styles.inputContainer}
+                    mode="outlined"
+                    outlineColor="#e3e2df"
+                    activeOutlineColor="black" />
 
                 <TextInput
                     placeholder="Password"
                     value={userPassword}
                     onChangeText={(text) => setUserPassword(text)}
                     secureTextEntry
-                    style={styles.inputContainer} />
+                    style={styles.inputContainer}
+                    mode="outlined"
+                    outlineColor="#e3e2df"
+                    activeOutlineColor="black" />
             </View>
 
             <View style={styles.buttonContainer}>
                 <Button
                     label="Login"
                     press={handleLogin} />
-                <Button
-                    label="Create An Account"
-                    press={() => navigation.navigate("RegisterationScreen")} />
+            </View>
+            <View style = {{justifyContent:"center",flexDirection: "row"}}>
+                <Text style={styles.createText}>If you don't have an account, </Text>
+                <TouchableOpacity onPress={() => navigation.navigate("RegisterationScreen")}>
+                    <Text style={[styles.createText,{fontWeight:"medium"}]}>create one!</Text>
+                </TouchableOpacity>
             </View>
 
         </View>

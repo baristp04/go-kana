@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
         margin: 8,
         alignContent: "center",
         padding: 10,
+        height: 30,
         borderRadius: 10,
         marginBottom: 9,
     },
@@ -27,17 +28,15 @@ const styles = StyleSheet.create({
         margin: 8,
         alignContent: "center",
     },
-    passwordMatchSuccess: {
-        color: "#ee4c7c",
-        fontWeight: "bold",
-        fontSize: 18,
-        alignSelf: "center"
+    match:{
+        fontSize:12,
+        paddingTop: 20,
+        fontWeight:"bold"
     },
-    passwordMatchFail: {
-        color: "#9a1750",
-        fontWeight: "bold",
-        fontSize: 18,
-        alignSelf: "center"
+    createText:{
+        textAlign:"center",
+        fontSize:15,
+
     }
 });
 
