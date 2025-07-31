@@ -7,11 +7,8 @@ import fullHiragana from "../../data/hiragana.json"
 import fullKatakana from "../../data/katakana.json"
 import Button from "../../components/Button/Button";
 import styles from "./Quiz.styles";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../state/store";
 import database from '@react-native-firebase/database';
 import auth from "@react-native-firebase/auth";
-import { increment, reset, setStreak } from "../../state/user/userSlice";
 import onDisableBack from "../../hooks/disableBackPress";
 import onHideBottoMTab from "../../hooks/hideBotttomTab";
 
@@ -19,7 +16,7 @@ const QuizPage = () => {
 
     const userUid = auth().currentUser?.uid;
 
-    const streak = useSelector((state: RootState) => state.user.streak);
+    const [streak, setStreak] = useState(0);
 
     useEffect(() => {
         const unsubscribe = auth().onAuthStateChanged(async () => {
@@ -30,7 +27,7 @@ const QuizPage = () => {
                         .once("value");
 
                     const savedStreak = snapshot.val() || 0;
-                    dispatch(setStreak(savedStreak));
+                    setStreak(savedStreak);
                     console.log("Fetched streak:", savedStreak);
                 } catch (error) {
                     console.log("Error fetching streak:", error);
@@ -38,7 +35,7 @@ const QuizPage = () => {
             }
         });
 
-        return () => unsubscribe(); 
+        return () => unsubscribe();
     }, [userUid]);
 
     const baseTabBarStyle = {
@@ -53,9 +50,9 @@ const QuizPage = () => {
         dataType: "hiragana" | "katakana"
         isCombinationAllowed: boolean;
     };
-    const letterData = dataType === "hiragana" ? 
-    (isCombinationAllowed ? fullHiragana : basicHiragana) : 
-    (isCombinationAllowed ? fullKatakana : basicKatakana);
+    const letterData = dataType === "hiragana" ?
+        (isCombinationAllowed ? fullHiragana : basicHiragana) :
+        (isCombinationAllowed ? fullKatakana : basicKatakana);
     const randomIndex = Math.floor(Math.random() * letterData.length);
 
 
@@ -64,7 +61,6 @@ const QuizPage = () => {
     const [currentIndex, setCurrentIndex] = useState(randomIndex);
     const [error, setError] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const dispatch = useDispatch()
 
     const setRandomLetter = () => {
 
@@ -79,8 +75,8 @@ const QuizPage = () => {
             try {
                 setSubmitted(true);
 
-                dispatch(increment())
                 const newStreak = streak + 1
+                setStreak(newStreak)
                 await database().ref(`users/${userUid}`).update({
                     streak: newStreak,
                 });
@@ -93,7 +89,7 @@ const QuizPage = () => {
         else {
             try {
                 setSubmitted(true);
-                dispatch(reset())
+                setStreak(0)
                 await database().ref(`users/${userUid}`).update({
                     streak: 0,
                 });
@@ -105,6 +101,18 @@ const QuizPage = () => {
         setPreviousElement(letterData[currentIndex]);
         setInput("");
         setRandomLetter();
+
+    }
+
+    const onResetStreak = async () => {
+        try {
+            setStreak(0)
+            await database().ref(`users/${userUid}`).update({
+                streak: 0,
+            });
+        } catch (e) {
+            console.log("Couldn't reset streak:", e)
+        }
 
     }
 
@@ -134,16 +142,7 @@ const QuizPage = () => {
             )}
             <Text style={styles.streakText}> Correct Answer Streak: {streak}</Text>
             <View style={styles.resetContainer}>
-                <Button label="End Streak" press={async () => {
-                    try {
-                        dispatch(reset())
-                        await database().ref(`users/${userUid}`).update({
-                            streak: 0,
-                        });
-                    } catch (e) {
-                        console.log("Couldn't reset streak:", e)
-                    }
-                }} />
+                <Button label="End Streak" press={onResetStreak} />
             </View>
 
         </View>
