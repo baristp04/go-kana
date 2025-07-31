@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { saveToAsyncStorage } from "../AsyncStorage";
 
 interface authState {
     user: any;
@@ -24,7 +23,6 @@ const authSlice = createSlice({
         },
         setUserName:(state, action: PayloadAction<string>) => {
             state.userName = action.payload
-            saveToAsyncStorage("auth", state.userName)
         },
         setLoading: (state, action: PayloadAction<boolean>) => {
             state.isLoading = action.payload
