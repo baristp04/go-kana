@@ -28,7 +28,7 @@ const Home = () => {
                     japanese="カタナ ヲ マナブ"
                 />
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-                    <Text style={{ fontWeight: "medium", fontSize: 14 }}> Allow Combinations For Each Letter</Text>
+                    <Text style={{ fontWeight: "medium", fontSize: 14 }}> Allow Combinations For Each Alphabet</Text>
                     <Checkbox
                         status={combinationAllowed ? "checked" : "unchecked"}
                         onPress={() => { setCombinationAllowed(!combinationAllowed) }}
