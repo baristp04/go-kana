@@ -1,12 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "./user/userSlice";
 import { loadFromAsyncStorage } from "./AsyncStorage";
 import authReducer, {setUserName}  from "./auth/authSlice"
 
 
 export const store = configureStore({
     reducer: {
-        user: userReducer,
         auth: authReducer,
     },
     middleware: (getDefaultMiddleware) =>
