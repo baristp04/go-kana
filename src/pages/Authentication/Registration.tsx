@@ -2,19 +2,12 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Alert } from "react-native"
 import { TextInput } from "react-native-paper";
 import Button from "../../components/Button/Button";
-import { getAuth, createUserWithEmailAndPassword, signOut } from "@react-native-firebase/auth";
+import { getAuth, createUserWithEmailAndPassword } from "@react-native-firebase/auth";
 import database from '@react-native-firebase/database';
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../state/store";
-import { loadFromAsyncStorage } from "../../state/AsyncStorage";
+import { useDispatch } from "react-redux";
 import { setUserName } from "../../state/auth/authSlice";
 import { setIsRegistering } from "../../state/auth/authSlice";
-import { RootStackParamList } from '../types';
 import styles from "./styles"
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const Register = () => {
     const [userNames, setUserNames] = useState<string[]>([]);
@@ -39,7 +32,6 @@ const Register = () => {
         fetchUserNames();
     }, [])
 
-    const navigation = useNavigation<NavigationProp>();
     const dispatch = useDispatch();
 
     const [email, setEmail] = useState("")
@@ -82,9 +74,6 @@ const Register = () => {
                 userName: nickName,
                 streak: 0
             });
-
-            await signOut(getAuth())
-            navigation.navigate("LoginScreen")
         } catch (error: any) {
             if (error.code === 'auth/email-already-in-use') {
                 Alert.alert('This email is already in use!');

@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
-import { NavigationContainer, useNavigationState } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Dimensions } from "react-native";
 import Home from "./pages/Home/HomeScreen";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Dictionary from "./pages/Home/DictionaryScreen";
@@ -12,7 +13,7 @@ import Registeration from "./pages/Authentication/Registration"
 import { getAuth } from "@react-native-firebase/auth";
 import { onAuthStateChanged } from "@react-native-firebase/auth";
 import { useDispatch, useSelector, } from "react-redux";
-import { setUser, setUserName, setLoading, setIsRegistering } from './state/auth/authSlice';
+import { setUser, setUserName, setIsRegistering } from './state/auth/authSlice';
 import { RootState } from "./state/store";
 import auth from "@react-native-firebase/auth"
 import database from "@react-native-firebase/database"
@@ -174,25 +175,20 @@ const Main = () => {
 const App = () => {
 
   const dispatch = useDispatch();
-  const { user, isLoading, isRegistering } = useSelector((state: RootState) => state.auth);
+  const { user, isRegistering } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
+
     const unsubscribe = onAuthStateChanged(getAuth(), (user: any) => {
-
-      if (isRegistering && user) { return; }
-
       dispatch(setUser(user))
-      dispatch(setLoading(isLoading))
 
       if (!user) {
         dispatch(setIsRegistering(false))
       }
     })
     return unsubscribe
-  }, [dispatch, setIsRegistering])
+  }, [dispatch])
 
-  //Splash screen soon
-  //if(isLoading) return null; 
 
   return (
     <NavigationContainer>
