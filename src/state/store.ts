@@ -1,6 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { loadFromAsyncStorage } from "./AsyncStorage";
-import authReducer, {setUserName}  from "./auth/authSlice"
+import authReducer from "./auth/authSlice"
 
 
 export const store = configureStore({
@@ -16,12 +15,6 @@ export const store = configureStore({
     }),
 });
 
-const initializeStore = async () => {
-    const userName = await loadFromAsyncStorage("auth")
-    store.dispatch(setUserName(userName));
-}
-
-initializeStore();
 
 export type RootState = ReturnType<typeof store.getState>; 
 export type AppDispatch = typeof store.dispatch;

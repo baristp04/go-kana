@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Dimensions } from "react-native";
 import Home from "./pages/Home/HomeScreen";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Dictionary from "./pages/Home/DictionaryScreen";
