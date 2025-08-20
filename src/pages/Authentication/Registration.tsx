@@ -93,7 +93,7 @@ const Register = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.registerText}>Create Your Account</Text>
-            <View>
+            <View style={styles.inputFrame}>
                 <TextInput
                     placeholder="Set Email"
                     value={email}
@@ -144,7 +144,7 @@ const Register = () => {
                             text={mockPassword === password ? "Password Matches" : "Password Doesn't Match"} />
                     ) : null} />
             </View>
-            <View style={styles.buttonContainer}>
+            <View style={[styles.buttonContainer,{ alignSelf: "center", width: "60%" }]}>
                 <Button label="Sign In" press={handleSignIn} disabled={!isFormValid() || isLoading} />
             </View>
         </View>

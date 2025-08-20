@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import Button from "../../components/Button/Button";
-import styles from "./Home.styles"
+import styles from "./styles"
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 

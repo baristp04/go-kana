@@ -119,32 +119,37 @@ const QuizPage = () => {
     return (
         <View style={styles.pageContainer}>
             <Text style={styles.pageTitle}>{dataType === "hiragana" ? "Hiragana Quiz" : "Katakana Quiz"}</Text>
+
             <View style={styles.innerContainer}>
                 <Text style={styles.counter}> Correct Answers: {count}</Text>
                 <View style={styles.japaneseLetterContainer}>
                     <Text style={styles.japanese}>{letterData[currentIndex].japanese}</Text>
                 </View>
             </View>
-            <View>
+            <View style={styles.bottomSection}>
                 <TextInput
                     value={input}
                     onChangeText={(input) => setInput(input.toLowerCase())}
                     placeholder="Type the romaji"
                     style={styles.inputContainer} />
-            </View>
-            <View style={styles.buttonContainer}>
-                <Button label="Submit" press={() => onSubmit(input)} />
-            </View>
-            {submitted && (
-                error
-                    ? <Text style={styles.notificationText} >Incorrect! Answer was {previousElement.romaji}</Text>
-                    : <Text style={styles.notificationText}>Correct!</Text>
-            )}
-            <Text style={styles.streakText}> Correct Answer Streak: {streak}</Text>
-            <View style={styles.resetContainer}>
-                <Button label="End Streak" press={onResetStreak} />
-            </View>
 
+                <View style={styles.buttonContainer}>
+                    <Button label="Submit" press={() => onSubmit(input)} />
+                </View>
+                <Text style={styles.notificationText}>
+                    {submitted && (
+                        error
+                            ? `Incorrect! Answer was ${previousElement.romaji}`
+                            : "Correct!"
+                    )}
+                </Text>
+
+                <Text style={styles.streakText}> Correct Answer Streak: {streak}</Text>
+
+                <View style={styles.resetContainer}>
+                    <Button label="End Streak" press={onResetStreak} />
+                </View>
+            </View>
         </View>
     )
 }

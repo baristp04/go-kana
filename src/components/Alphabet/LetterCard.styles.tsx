@@ -1,33 +1,34 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 
+const { width } = Dimensions.get("window");
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#e3e2df",
-        alignItems:"center",
+        alignItems: "center",
     },
     wrapper: {
-        padding: 6,
+        width: (width - 60) / 3,
+        height: (width - 60) / 3,
         backgroundColor: "#9a1750",
-        borderWidth: 4,
-        borderRadius: 6,
-        borderColor: "black",
-        justifyContent: "space-evenly",
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: "#000",
+        justifyContent: "center",
         alignItems: "center",
-        marginVertical: 10,
-        width: 120,
-        height: 120,
+        marginBottom: 10,
     },
     japanese: {
-        fontSize: 40,
+        fontSize: width > 400 ? 36 : 32,
+        color: "#000",
+        fontWeight: "bold",
         textAlign: "center",
-        color:"black",
     },
     romaji: {
-        fontSize: 20,
+        fontSize: width > 400 ? 20 : 18,
+        color: "#000",
         textAlign: "center",
-        color: "black",
-        width: "100%",
+        marginTop: 5,
         includeFontPadding: false,
     }
 });

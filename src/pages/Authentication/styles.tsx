@@ -7,6 +7,17 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
     },
+    inputFrame: {
+        width: "90%",
+        alignSelf: "center",
+        borderWidth: 1,
+        backgroundColor: "ivory",
+        borderColor: "#ccc",
+        borderRadius: 10,
+        margin: 12,
+        padding: 10,
+        elevation: 8,
+    },
     loginText: {
         textAlign: "center",
         fontSize: 40,

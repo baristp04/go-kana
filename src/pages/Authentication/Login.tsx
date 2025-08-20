@@ -57,7 +57,7 @@ const AuthHome = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.loginText}>Welcome!</Text>
-            <View>
+            <View style={styles.inputFrame}>
                 <TextInput
                     placeholder="Email"
                     value={userEmail}
@@ -80,7 +80,7 @@ const AuthHome = () => {
                     activeOutlineColor="black" />
             </View>
 
-            <View style={styles.buttonContainer}>
+            <View style={[styles.buttonContainer,{ alignSelf: "center", width: "60%" }]}>
                 <Button
                     label="Login"
                     press={handleLogin} />

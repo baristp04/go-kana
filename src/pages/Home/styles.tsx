@@ -18,6 +18,12 @@ const styles = StyleSheet.create({
         justifyContent:"center"
     },
 
+    dictionaryContainer: {
+        flex: 1,
+        backgroundColor: "#e3e2df",
+        paddingHorizontal: 15,
+    },
+
 })
 
 export default styles;

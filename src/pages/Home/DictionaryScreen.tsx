@@ -7,6 +7,7 @@ import basicHiragana from "../../data/basic-hiragana.json";
 import basicKatakana from "../../data/basic-katakana.json";
 import fullHiragana from "../../data/hiragana.json"
 import fullKatakana from "../../data/katakana.json"
+import styles from "./styles";
 
 const Dictionary = () => {
 
@@ -22,12 +23,28 @@ const Dictionary = () => {
     const renderLetter = ({ item }: { item: letterProps }) => <LetterCard japanese={item.japanese} romaji={item.romaji} />
 
     return (
-        <View>
-            <FlatList
+        <View style = {styles.dictionaryContainer}>
+ <FlatList
                 data={letterData}
                 renderItem={renderLetter}
                 numColumns={3}
-                columnWrapperStyle={{ justifyContent: "space-between" }}
+                key="3-columns" // Force re-render when numColumns changes
+                columnWrapperStyle={{ 
+                    justifyContent: "space-between",
+                    marginBottom: 12,
+                    paddingHorizontal: 5
+                }}
+                contentContainerStyle={{
+                    paddingVertical: 10,
+                    flexGrow: 1
+                }}
+                ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+                showsVerticalScrollIndicator={false}
+                bounces={true}
+                removeClippedSubviews={true}
+                maxToRenderPerBatch={15}
+                windowSize={10}
+                initialNumToRender={12}
             />
 
         </View>
