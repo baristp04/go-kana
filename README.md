@@ -1,4 +1,4 @@
-### Go-Kana: Kana Alphabet Learning App
+# Go-Kana: Kana Alphabet Learning App
 
 Japanese learning app with symbols and quizzes developed with React Native as my internship project for Teracity Software 
 
