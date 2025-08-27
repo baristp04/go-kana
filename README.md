@@ -15,4 +15,5 @@ Japanese learning app with symbols and quizzes developed with React Native as my
 - Firebase Auth
 - Firebase Realtime DB
 - React Native Navigation
+- React Native Paper
 
