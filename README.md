@@ -1,27 +1,18 @@
-# Go-Kana: Kana Alphabet Learning App
+### Go-Kana: Kana Alphabet Learning App
 
-This app is being developed with React Native for my internship at Teracity Software. Currently the app is unfinished. There are still some features being added. 
+Japanese learning app with symbols and quizzes developed with React Native as my internship project for Teracity Software 
 
-## Main Features Currently Being Worked On: 
+## Features
+- Simple Authentication
+- Responsive UI for phones in any size
+- Displaying Hiragana and Kanji letters (combinations can be displayed optionally)
+- User-unique streak management for quiz
+- Currently working on better UI and optimization
+  
+## Technology Stack
+- React Native
+- TypeScript
+- Firebase Auth
+- Firebase Realtime DB
+- React Native Navigation
 
->Proper user-unique streak management.
-
->No repeated user nicknames in the database.
-
->A statistics page for the user to see their profiles.
-
-## Features To Be Added After The Main Features
-
->UI Improvements.
-
-## Technologies Used
-
->TypeScript
-
->Redux Toolkit
-
->React Navigation
-
->Firebase
-
->Async Storage
