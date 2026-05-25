@@ -17,3 +17,6 @@ Japanese learning app with symbols and quizzes developed with React Native as my
 - React Native Navigation
 - React Native Paper
 
+## To-Do's
+- Develop an API for kana alpahbet
+- Improve UI/UX 
