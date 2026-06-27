@@ -1,147 +1,182 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, TextInput, ActivityIndicator } from "react-native";
 import { useRoute } from "@react-navigation/native";
-import basicHiragana from "../../data/basic-hiragana.json";
-import basicKatakana from "../../data/basic-katakana.json";
-import fullHiragana from "../../data/hiragana.json"
-import fullKatakana from "../../data/katakana.json"
+import auth from "@react-native-firebase/auth";
 import Button from "../../components/Button/Button";
 import styles from "./Quiz.styles";
-import database from '@react-native-firebase/database';
-import auth from "@react-native-firebase/auth";
 import onDisableBack from "../../hooks/disableBackPress";
 import onHideBottoMTab from "../../hooks/hideBotttomTab";
+import config from "../../config"; 
 
 const QuizPage = () => {
-
-    const userUid = auth().currentUser?.uid;
-
-    const [streak, setStreak] = useState(0);
-
-    useEffect(() => {
-        const unsubscribe = auth().onAuthStateChanged(async () => {
-            if (userUid) {
-                try {
-                    const snapshot = await database()
-                        .ref(`users/${userUid}/streak`)
-                        .once("value");
-
-                    const savedStreak = snapshot.val() || 0;
-                    setStreak(savedStreak);
-                    console.log("Fetched streak:", savedStreak);
-                } catch (error) {
-                    console.log("Error fetching streak:", error);
-                }
-            }
-        });
-
-        return () => unsubscribe();
-    }, [userUid]);
-
-    const baseTabBarStyle = {
-        backgroundColor: '#9a1750',
-    }
-
+    const baseTabBarStyle = { backgroundColor: '#9a1750' };
     onDisableBack();
     onHideBottoMTab(baseTabBarStyle);
 
     const route = useRoute();
     const { dataType, isCombinationAllowed } = route.params as {
-        dataType: "hiragana" | "katakana"
+        dataType: "hiragana" | "katakana";
         isCombinationAllowed: boolean;
     };
-    const letterData = dataType === "hiragana" ?
-        (isCombinationAllowed ? fullHiragana : basicHiragana) :
-        (isCombinationAllowed ? fullKatakana : basicKatakana);
-    const randomIndex = Math.floor(Math.random() * letterData.length);
 
-
-    const [count, setCount] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
+    const [streak, setStreak] = useState(0);
+    const [count, setCount] = useState(0); 
     const [input, setInput] = useState("");
-    const [currentIndex, setCurrentIndex] = useState(randomIndex);
-    const [error, setError] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
+    const [currentJapanese, setCurrentJapanese] = useState("");
+    
+    const [feedback, setFeedback] = useState<{ show: boolean; isCorrect: boolean; message: string }>({
+        show: false,
+        isCorrect: false,
+        message: ""
+    });
 
-    const setRandomLetter = () => {
-
-        const newIndex = Math.floor(Math.random() * letterData.length);
-        setCurrentIndex(newIndex);
-    }
-
-    const [previousElement, setPreviousElement] = useState(letterData[currentIndex]);
-
-    const onSubmit = async (input: string) => {
-        if (input.toLowerCase() === letterData[currentIndex].romaji) {
-            try {
-                setSubmitted(true);
-
-                const newStreak = streak + 1
-                setStreak(newStreak)
-                await database().ref(`users/${userUid}`).update({
-                    streak: newStreak,
-                });
-                setCount(count + 1);
-                setError(false)
-            } catch (e) {
-                console.log("Couldn't find user:", e)
-            }
+    const getToken = async () => {
+        const user = auth().currentUser;
+        if (user) {
+            return await user.getIdToken(); 
         }
-        else {
-            try {
-                setSubmitted(true);
-                setStreak(0)
-                await database().ref(`users/${userUid}`).update({
-                    streak: 0,
-                });
-                setError(true)
-            } catch (e) {
-                console.log("Couldn't find user:", e)
-            }
-        }
-        setPreviousElement(letterData[currentIndex]);
-        setInput("");
-        setRandomLetter();
+        return null;
+    };
 
-    }
+    const fetchInitialData = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const token = await getToken();
+            if (!token) return;
+
+            const streakRes = await fetch(`${config.BASE_URL}/api/quiz/streak`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (streakRes.ok) {
+                const streakData = await streakRes.json();
+                setStreak(streakData.streak);
+            }
+
+            await fetchNextQuestion(token);
+        } catch (error) {
+            console.error("Başlangıç verileri alınırken hata:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [dataType, isCombinationAllowed]);
+
+    useEffect(() => {
+        fetchInitialData();
+    }, [fetchInitialData]);
+
+    const fetchNextQuestion = async (existingToken?: string | null) => {
+        try {
+            const token = existingToken || await getToken();
+            const endpoint = `${config.BASE_URL}/api/quiz/generate?alphabet=${dataType}&combinations=${isCombinationAllowed}`;
+            
+            const response = await fetch(endpoint, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setCurrentJapanese(data.japanese); 
+            }
+        } catch (error) {
+            console.error("Yeni soru alınırken hata:", error);
+        }
+    };
+
+    const onSubmit = async () => {
+        if (!input.trim()) return; 
+
+        try {
+            const token = await getToken();
+            const response = await fetch(`${config.BASE_URL}/api/quiz/submit`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    alphabet: dataType,
+                    combinations: isCombinationAllowed,
+                    japanese: currentJapanese,
+                    user_answer: input, 
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.is_correct) {
+                setCount(prev => prev + 1);
+                setFeedback({ show: true, isCorrect: true, message: "Correct!" });
+            } else {
+                setFeedback({ 
+                    show: true, 
+                    isCorrect: false, 
+                    message: `Incorrect! Answer was ${data.correct_answer}` 
+                });
+            }
+
+            setStreak(data.new_streak);
+            setInput(""); 
+            
+            await fetchNextQuestion(token);
+
+        } catch (e) {
+            console.error("Cevap gönderilirken hata:", e);
+        }
+    };
 
     const onResetStreak = async () => {
         try {
-            setStreak(0)
-            await database().ref(`users/${userUid}`).update({
-                streak: 0,
+            const token = await getToken();
+            const response = await fetch(`${config.BASE_URL}/api/quiz/reset-streak`, {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` },
             });
-        } catch (e) {
-            console.log("Couldn't reset streak:", e)
-        }
 
+            if (response.ok) {
+                const data = await response.json();
+                setStreak(data.new_streak); 
+            }
+        } catch (e) {
+            console.error("Streak sıfırlanamadı:", e);
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <View style={[styles.pageContainer, { justifyContent: 'center', alignItems: 'center' }]}>
+                <ActivityIndicator size="large" color="#9a1750" />
+            </View>
+        );
     }
 
     return (
         <View style={styles.pageContainer}>
-            <Text style={styles.pageTitle}>{dataType === "hiragana" ? "Hiragana Quiz" : "Katakana Quiz"}</Text>
+            <Text style={styles.pageTitle}>
+                {dataType === "hiragana" ? "Hiragana Quiz" : "Katakana Quiz"}
+            </Text>
 
             <View style={styles.innerContainer}>
                 <Text style={styles.counter}> Correct Answers: {count}</Text>
                 <View style={styles.japaneseLetterContainer}>
-                    <Text style={styles.japanese}>{letterData[currentIndex].japanese}</Text>
+                    <Text style={styles.japanese}>{currentJapanese}</Text>
                 </View>
             </View>
+            
             <View style={styles.bottomSection}>
                 <TextInput
                     value={input}
-                    onChangeText={(input) => setInput(input.toLowerCase())}
+                    onChangeText={(text) => setInput(text.toLowerCase())}
                     placeholder="Type the romaji"
-                    style={styles.inputContainer} />
+                    style={styles.inputContainer} 
+                />
 
                 <View style={styles.buttonContainer}>
-                    <Button label="Submit" press={() => onSubmit(input)} />
+                    <Button label="Submit" press={onSubmit} />
                 </View>
+                
                 <Text style={styles.notificationText}>
-                    {submitted && (
-                        error
-                            ? `Incorrect! Answer was ${previousElement.romaji}`
-                            : "Correct!"
-                    )}
+                    {feedback.show && feedback.message}
                 </Text>
 
                 <Text style={styles.streakText}> Correct Answer Streak: {streak}</Text>
@@ -151,7 +186,7 @@ const QuizPage = () => {
                 </View>
             </View>
         </View>
-    )
-}
+    );
+};
 
 export default QuizPage;
